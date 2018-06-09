@@ -6,55 +6,58 @@ using namespace std;
 class Solution {
 	public:
 		vector<int> searchRange(vector<int>& nums, int target) {
-			int idx = binarySearch(nums, 0, nums.size() - 1, target);
-			if (idx == -1) {
+			vector<int> ans;
+
+			if (0 == nums.size()) {
 				return {-1, -1};
 			}
 
-			int left = idx;
-			int right = idx;
+			{ // find left
+				int left = 0, right = nums.size() - 1;
 
-			while (left > 0) {
-				if (nums[left - 1] == target) {
-					left--;
+				while (left < right) {
+					int mid = (left + right) / 2;
+
+					if (nums[mid] < target) {
+						left = mid + 1;
+					} else {
+						right = mid;
+					}
+				}
+
+				if (nums[left] != target) {
+					return {-1, -1};
 				} else {
-					break;
+					ans.push_back(left);
 				}
 			}
 
-			while (right < nums.size() - 1) {
-				if (nums[right + 1] == target) {
-					right++;
-				} else {
-					break;
+			{ // find right
+				int left = ans[0]; // left
+				int right = nums.size() - 1;
+
+				while (left < right) {
+					int mid = (left + right) / 2 + 1; // ceiling
+
+					if (nums[mid] > target) {
+						right = mid - 1;
+					} else {
+						left = mid;
+					}
 				}
+
+				ans.push_back(right);
 			}
 
-			return {left, right};
-		}
-
-		int binarySearch(vector<int> &nums, int idx_left, int idx_right, int target) {
-			if (idx_left > idx_right) {
-				return -1;
-			}
-
-			int idx_mid = (idx_left + idx_right) / 2;
-
-			if (nums[idx_mid] == target) {
-				return idx_mid;
-			} else if (nums[idx_mid] > target) {
-				return binarySearch(nums, idx_left, idx_mid - 1, target);
-			} else if (nums[idx_mid] < target) {
-				return binarySearch(nums, idx_mid + 1, idx_right, target);
-			}
+			return ans;
 		}
 };
 
 int main()
 {
 	Solution a;
-	vector<int> input = {2, 2};
-	vector<int> v = a.searchRange(input, 2);
+	vector<int> input = {};
+	vector<int> v = a.searchRange(input, 0);
 
 	for (const auto &i : v) {
 		cout << i <<  " ";
